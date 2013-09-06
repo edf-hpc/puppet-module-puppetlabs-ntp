@@ -1,0 +1,5 @@
+puppet-module-puppetlabs-ntp (2.0.1-1) UNRELEASED; urgency=low
+
+  * Initial release (Closes: #720094)
+
+ -- Thomas Bechtold <thomasbechtold@jpberlin.de>  Fri, 06 Sep 2013 03:53:39 -0000
