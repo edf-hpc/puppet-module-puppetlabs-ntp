@@ -1,3 +1,42 @@
+## 2013-12-17 Release 3.0.1
+### Summary:
+
+Work around a packaging bug with symlinks, no other functional changes.
+
+## 2013-12-13 Release 3.0.0
+### Summary:
+
+Final release of 3.0, enjoy!
+
+## 2013-10-14 - Version 3.0.0-rc1
+
+### Summary:
+
+This release changes the behavior of restrict and adds AIX osfamily support.
+
+### Backwards-incompatible Changes:
+
+`restrict` no longer requires you to pass in parameters as:
+
+restrict => [ 'restrict x', 'restrict y' ]
+
+but just as:
+
+restrict => [ 'x', 'y' ]
+
+As the template now prefixes each line with restrict.
+
+Features:
+- Change the behavior of `restrict` so you no longer need the restrict
+keyword.
+- Add `udlc` parameter to enable undisciplined local clock regardless of the
+machines status as a virtual machine.
+- Add AIX support.
+
+Fixes:
+- Use class{} instead of including and then anchoring. (style)
+- Extend Gentoo coverage to Facter 1.7.
+
 2013-09-05 - Version 2.0.1
 
 Summary:
