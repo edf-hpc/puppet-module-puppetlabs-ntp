@@ -18,9 +18,11 @@ when 'Linux'
   when 'Gentoo'
     line = '0.gentoo.pool.ntp.org'
   end
+when 'AIX'
+  line = '0.debian.pool.ntp.org iburst'
 end
 
-describe 'ntp::config class' do
+describe 'ntp::config class', :unless => UNSUPPORTED_PLATFORMS.include?(fact('osfamily')) do
   it 'sets up ntp.conf' do
     apply_manifest(%{
       class { 'ntp': }
