@@ -12,11 +12,13 @@ when 'Linux'
   when 'Gentoo'
     packagename = 'net-misc/ntp'
   end
+when 'AIX'
+  packagename = 'bos.net.tcp.client'
 else
   packagename = 'ntp'
 end
 
-describe 'ntp::install class' do
+describe 'ntp::install class', :unless => UNSUPPORTED_PLATFORMS.include?(fact('osfamily')) do
   it 'installs the package' do
     apply_manifest(%{
       class { 'ntp': }

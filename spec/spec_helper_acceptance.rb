@@ -1,10 +1,18 @@
 require 'beaker-rspec'
 
-hosts.each do |host|
-  # Install Puppet
-  install_package host, 'rubygems'
-  on host, 'gem install puppet --no-ri --no-rdoc'
-  on host, "mkdir -p #{host['distmoduledir']}"
+UNSUPPORTED_PLATFORMS = [ 'windows', 'Solaris' ]
+
+unless ENV['RS_PROVISION'] == 'no'
+  hosts.each do |host|
+    # Install Puppet
+    if host.is_pe?
+      install_pe
+    else
+      install_package host, 'rubygems'
+      on host, 'gem install puppet --no-ri --no-rdoc'
+      on host, "mkdir -p #{host['distmoduledir']}"
+    end
+  end
 end
 
 RSpec.configure do |c|
@@ -19,7 +27,7 @@ RSpec.configure do |c|
     # Install module and dependencies
     puppet_module_install(:source => proj_root, :module_name => 'ntp')
     hosts.each do |host|
-      shell('/bin/touch /etc/puppet/hiera.yaml')
+      shell("/bin/touch #{default['distmoduledir']}/hiera.yaml")
       shell('puppet module install puppetlabs-stdlib', :acceptable_exit_codes => [0,1])
     end
   end
