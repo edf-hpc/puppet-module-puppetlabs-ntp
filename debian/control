@@ -12,7 +12,8 @@ Homepage: https://forge.puppetlabs.com/puppetlabs/ntp
 Package: puppet-module-puppetlabs-ntp
 Architecture: all
 Depends: ${misc:Depends},
-         puppet-common
+         puppet-common (>= 3),
+         puppet-module-puppetlabs-stdlib
 Description: Puppet module for ntp
  Puppet lets you centrally manage every important aspect of your system
  using a cross-platform specification language that manages all the
