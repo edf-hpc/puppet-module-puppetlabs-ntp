@@ -68,13 +68,24 @@ class { '::ntp':
 }
 ```
 
+###I only want to listen on specific interfaces, not on 0.0.0.0
+
+Restricting this is especially useful on Openstack nodes which may have numerous virtual interfaces.
+
+```puppet
+class { '::ntp':
+  servers  => [ 'ntp1.corp.com', 'ntp2.corp.com' ],
+  interfaces => ['127.0.0.1', '1.2.3.4']
+}
+```
+
 ###I'd like to opt out of having the service controlled; we use another tool for that.
 
 ```puppet
 class { '::ntp':
   servers        => [ 'ntp1.corp.com', 'ntp2.corp.com' ],
   restrict       => ['127.0.0.1'],
-  manage_service => false,
+  service_manage => false,
 }
 ```
 
@@ -84,7 +95,7 @@ class { '::ntp':
 class { '::ntp':
   servers         => [ 'ntp1.corp.com', 'ntp2.corp.com' ],
   restrict        => ['127.0.0.1'],
-  manage_service  => false,
+  service_manage  => false,
   config_template => 'different/module/custom.template.erb',
 }
 ```
@@ -120,9 +131,21 @@ Sets the file that ntp configuration is written into.
 
 Determines which template Puppet should use for the ntp configuration.
 
+####`disable_monitor`
+
+Disables monitoring of ntp.
+
 ####`driftfile`
 
 Sets the location of the drift file for ntp.
+
+####`iburst_enable`
+
+Set the iburst option in the ntp configuration. If enabled the option is set for every ntp peer.
+
+####`interfaces`
+
+Sets the list of interfaces NTP will listen on. This parameter must be an array.
 
 ####`keys_controlkey`
 
@@ -206,6 +229,8 @@ The module has been tested on:
 * Gentoo
 * Arch Linux
 * FreeBSD
+* Solaris 11
+* AIX 5.3, 6.1, 7.1
 
 Testing on other platforms has been light and cannot be guaranteed. 
 
