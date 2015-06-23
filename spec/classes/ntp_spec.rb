@@ -87,11 +87,12 @@ describe 'ntp' do
           context "when set" do
             let(:params) {{
               :servers           => ['a', 'b', 'c', 'd'],
-              :preferred_servers => ['a', 'b']
+              :preferred_servers => ['a', 'b'],
+              :iburst_enable     => false,
             }}
 
             it { should contain_file('/etc/ntp.conf').with({
-              'content' => /server a( iburst)? prefer\nserver b( iburst)? prefer\nserver c( iburst)?\nserver d( iburst)?/})
+              'content' => /server a prefer( maxpoll 9)?\nserver b prefer( maxpoll 9)?\nserver c( maxpoll 9)?\nserver d( maxpoll 9)?/})
             }
           end
           context "when not set" do
@@ -126,22 +127,75 @@ describe 'ntp' do
             }
           end
         end
+        describe 'with parameter disable_auth' do
+          context 'when set to true' do
+            let(:params) {{
+              :disable_auth => true,
+            }}
+
+            it 'should contain disable auth setting' do
+              should contain_file('/etc/ntp.conf').with({
+              'content' => /^disable auth\n/,
+              })
+            end
+          end
+          context 'when set to false' do
+            let(:params) {{
+              :disable_auth => false,
+            }}
+
+            it 'should not contain disable auth setting' do
+              should_not contain_file('/etc/ntp.conf').with({
+              'content' => /^disable auth\n/,
+              })
+            end
+          end
+        end
+        describe 'with parameter broadcastclient' do
+          context 'when set to true' do
+            let(:params) {{
+              :broadcastclient => true,
+            }}
+
+            it 'should contain broadcastclient setting' do
+              should contain_file('/etc/ntp.conf').with({
+              'content' => /^broadcastclient\n/,
+              })
+            end
+          end
+          context 'when set to false' do
+            let(:params) {{
+              :broadcastclient => false,
+            }}
+
+            it 'should not contain broadcastclient setting' do
+              should_not contain_file('/etc/ntp.conf').with({
+              'content' => /^broadcastclient\n/,
+              })
+            end
+          end
+        end
 
         describe "ntp::install on #{system}" do
-          let(:params) {{ :package_ensure => 'present', :package_name => ['ntp'], }}
+          let(:params) {{ :package_ensure => 'present', :package_name => ['ntp'], :package_manage => true, }}
 
           it { should contain_package('ntp').with(
             :ensure => 'present'
           )}
 
           describe 'should allow package ensure to be overridden' do
-            let(:params) {{ :package_ensure => 'latest', :package_name => ['ntp'] }}
+            let(:params) {{ :package_ensure => 'latest', :package_name => ['ntp'], :package_manage => true, }}
             it { should contain_package('ntp').with_ensure('latest') }
           end
 
           describe 'should allow the package name to be overridden' do
-            let(:params) {{ :package_ensure => 'present', :package_name => ['hambaby'] }}
+            let(:params) {{ :package_ensure => 'present', :package_name => ['hambaby'], :package_manage => true, }}
             it { should contain_package('hambaby') }
+          end
+
+          describe 'should allow the package to be unmanaged' do
+            let(:params) {{ :package_manage => false, :package_name => ['ntp'], }}
+            it { should_not contain_package('ntp') }
           end
         end
 
@@ -194,7 +248,7 @@ describe 'ntp' do
 
             it do
               should contain_file('/etc/ntp.conf').with({
-              'content' => /iburst\n/,
+              'content' => /iburst/,
               })
             end
           end
@@ -212,6 +266,181 @@ describe 'ntp' do
           end
         end
 
+        describe 'with tinker parameter changed' do
+          describe 'when set to false' do
+            context 'when panic or stepout not overriden' do
+              let(:params) {{
+                :tinker => false,
+              }}
+
+              it do
+                should_not contain_file('/etc/ntp.conf').with({
+                  'content' => /^tinker /,
+                })
+              end
+            end
+
+            context 'when panic overriden' do
+              let(:params) {{
+                :tinker => false,
+                :panic  => 257,
+              }}
+
+              it do
+                should_not contain_file('/etc/ntp.conf').with({
+                  'content' => /^tinker /,
+                })
+              end
+            end
+
+            context 'when stepout overriden' do
+              let(:params) {{
+                :tinker  => false,
+                :stepout => 5,
+              }}
+
+              it do
+                should_not contain_file('/etc/ntp.conf').with({
+                  'content' => /^tinker /,
+                })
+              end
+            end
+
+            context 'when panic and stepout overriden' do
+              let(:params) {{
+                  :tinker  => false,
+                  :panic   => 257,
+                  :stepout => 5,
+              }}
+
+              it do
+                should_not contain_file('/etc/ntp.conf').with({
+                  'content' => /^tinker /,
+                })
+              end
+            end
+          end
+          describe 'when set to true' do
+            context 'when only tinker set to true' do
+              let(:params) {{
+                :tinker => true,
+              }}
+
+              it do
+                should_not contain_file('/etc/ntp.conf').with({
+                  'content' => /^tinker /,
+                })
+              end
+            end
+
+            context 'when panic changed' do
+              let(:params) {{
+                :tinker => true,
+                :panic  => 257,
+              }}
+
+              it do
+                should contain_file('/etc/ntp.conf').with({
+                  'content' => /^tinker panic 257\n/,
+                })
+              end
+            end
+
+            context 'when stepout changed' do
+              let(:params) {{
+                :tinker  => true,
+                :stepout => 5,
+              }}
+
+              it do
+                should contain_file('/etc/ntp.conf').with({
+                  'content' => /^tinker stepout 5\n/,
+                })
+              end
+            end
+
+            context 'when panic and stepout changed' do
+              let(:params) {{
+                :tinker  => true,
+                :panic   => 257,
+                :stepout => 5,
+              }}
+
+              it do
+                should contain_file('/etc/ntp.conf').with({
+                  'content' => /^tinker panic 257 stepout 5\n/,
+                })
+              end
+            end
+          end
+        end
+
+        describe 'with parameters minpoll or maxpoll changed from default' do
+          context 'when minpoll changed from default' do
+            let(:params) {{
+                :minpoll => 3,
+            }}
+
+            it do
+              should contain_file('/etc/ntp.conf').with({
+                'content' => /minpoll 3/,
+              })
+            end
+          end
+
+          context 'when maxpoll changed from default' do
+            let(:params) {{
+                :maxpoll => 12,
+            }}
+
+            it do
+              should contain_file('/etc/ntp.conf').with({
+                'content' => /maxpoll 12\n/,
+              })
+            end
+          end
+
+          context 'when minpoll and maxpoll changed from default simultaneously' do
+            let(:params) {{
+                :minpoll => 3,
+                :maxpoll => 12,
+            }}
+
+            it do
+              should contain_file('/etc/ntp.conf').with({
+                'content' => /minpoll 3 maxpoll 12\n/,
+              })
+            end
+          end
+        end
+
+        describe 'with parameter leapfile' do
+          context 'when set to true' do
+            let(:params) {{
+              :servers => ['a', 'b', 'c', 'd'],
+              :leapfile => '/etc/leap-seconds.3629404800',
+            }}
+
+            it 'should contain leapfile setting' do
+              should contain_file('/etc/ntp.conf').with({
+              'content' => /^leapfile \/etc\/leap-seconds\.3629404800\n/,
+              })
+            end
+          end
+
+          context 'when set to false' do
+            let(:params) {{
+              :servers => ['a', 'b', 'c', 'd'],
+            }}
+
+            it 'should not contain a leapfile line' do
+              should_not contain_file('/etc/ntp.conf').with({
+                'content' => /leapfile /,
+              })
+            end
+          end
+        end
+
         describe 'with parameter logfile' do
           context 'when set to true' do
             let(:params) {{
@@ -221,7 +450,7 @@ describe 'ntp' do
 
             it 'should contain logfile setting' do
               should contain_file('/etc/ntp.conf').with({
-              'content' => /^logfile = \/var\/log\/foobar\.log\n/,
+              'content' => /^logfile \/var\/log\/foobar\.log\n/,
               })
             end
           end
@@ -233,8 +462,35 @@ describe 'ntp' do
 
             it 'should not contain a logfile line' do
               should_not contain_file('/etc/ntp.conf').with({
-                'content' => /logfile =/,
+                'content' => /logfile /,
               })
+            end
+          end
+        end
+
+        describe 'peers' do
+          context 'when empty' do
+            let(:params) do
+              {
+                :peers => []
+              }
+            end
+
+            it 'should not contain a peer line' do
+              should contain_file('/etc/ntp.conf').without_content(/^peer/)
+            end
+          end
+
+          context 'set' do
+            let(:params) do
+              {
+                :peers => ['foo', 'bar'],
+              }
+            end
+
+            it 'should contain the peer lines' do
+              should contain_file('/etc/ntp.conf').with_content(/peer foo/)
+              should contain_file('/etc/ntp.conf').with_content(/peer bar/)
             end
           end
         end
@@ -310,7 +566,7 @@ describe 'ntp' do
 
         it 'uses the freebsd ntp servers by default' do
           should contain_file('/etc/ntp.conf').with({
-            'content' => /server \d.freebsd.pool.ntp.org maxpoll 9 iburst/,
+            'content' => /server \d.freebsd.pool.ntp.org iburst maxpoll 9/,
           })
         end
       end
@@ -358,8 +614,8 @@ describe 'ntp' do
         })
         end
 
-        it { expect{ subject }.to raise_error(
-          /^The ntp module is not supported on an unsupported based system./
+        it { expect{ catalogue }.to raise_error(
+          /The ntp module is not supported on an unsupported based system./
         )}
       end
     end
