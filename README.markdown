@@ -154,7 +154,7 @@ client and symmetric passive associations.
 
 ####`disable_monitor`
 
-Tells Puppet whether to refrain from monitoring the NTP service. Valid options: 'true' or 'false'. Default value: 'false'
+Disables the monitoring facility in NTP. Valid options: 'true' or 'false'. Default value: 'false'
 
 ####`driftfile`
 
@@ -291,7 +291,7 @@ Specifies the stratum the server should operate at when using the undisciplined 
 
 ##Limitations
 
-This module has been tested on [all PE-supported platforms](https://forge.puppetlabs.com/supported#compat-matrix), and no issues have been identified.
+This module has been tested on [all PE-supported platforms](https://forge.puppetlabs.com/supported#compat-matrix), and no issues have been identified. Additionally, it is tested (but not supported) on Solaris 10 and Fedora 20-22.
 
 ##Development
 
