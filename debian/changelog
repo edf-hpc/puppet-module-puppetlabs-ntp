@@ -1,3 +1,9 @@
+puppet-module-puppetlabs-ntp (4.1.0-1) UNRELEASED; urgency=medium
+
+  * Imported upstream release 4.1.0
+
+ -- Stig Sandbeck Mathisen <ssm@debian.org>  Sat, 12 Sep 2015 00:26:09 +0200
+
 puppet-module-puppetlabs-ntp (4.0.0-1) unstable; urgency=medium
 
   * Imported upstream relase 4.0.0
