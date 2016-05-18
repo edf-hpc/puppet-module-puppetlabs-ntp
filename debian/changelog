@@ -1,4 +1,4 @@
-puppet-module-puppetlabs-ntp (4.2.0-1) UNRELEASED; urgency=medium
+puppet-module-puppetlabs-ntp (4.2.0-1) unstable; urgency=medium
 
   * Imported upstream relase 4.2.0
   * Declare compliance with Debian policy 3.9.8
@@ -6,7 +6,7 @@ puppet-module-puppetlabs-ntp (4.2.0-1) UNRELEASED; urgency=medium
   * Add myself to Uploaders list
   * Update source homepage
 
- -- Stig Sandbeck Mathisen <ssm@debian.org>  Wed, 18 May 2016 21:07:28 +0200
+ -- Stig Sandbeck Mathisen <ssm@debian.org>  Wed, 18 May 2016 21:11:24 +0200
 
 puppet-module-puppetlabs-ntp (4.1.1-1) unstable; urgency=medium
 
