@@ -1,4 +1,4 @@
-puppet-module-puppetlabs-ntp (4.2.0-2~bpo8+0calibre1)calibre9; urgency=low
+puppet-module-puppetlabs-ntp (4.2.0-2~bpo8+0calibre1) calibre9; urgency=low
 
   * New upstream release for Calibre9
 
